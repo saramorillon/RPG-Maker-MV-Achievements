@@ -1,6 +1,13 @@
 # RPG-Maker-MV-Achievements
 
-RPG Maker MV Achievements allows you to create achievements in RPG Maker MV. 
+RPG Maker MV Achievements allows you to create achievements in RPG Maker MV.
+
+__Usage__
+
+To unlock an achievement, simply use the following module command in an event : 
+```
+Achievement unlock <achievement id>
+```
 
 __Achievements.json__
 
