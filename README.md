@@ -6,7 +6,7 @@ __Usage__
 
 To unlock an achievement, simply use the following module command in an event : 
 ```
-Achievement unlock <achievement id>
+Achievements unlock <achievement id>
 ```
 
 __Achievements.json__
