@@ -9,6 +9,8 @@ To unlock an achievement, simply use the following module command in an event :
 Achievements unlock <achievement id>
 ```
 
+![Achievement unlocked](https://raw.githubusercontent.com/PicusViridis/RPG-Maker-MV-Achievements/master/Screenshots/Achievement%20unlocked!.png)
+
 # Achievements.json
 
 Place a file named Achievements.json under the data directory.
