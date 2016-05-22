@@ -1,5 +1,5 @@
 /*jslint vars: true, nomen: true, plusplus: true, eqeq: true */
-/*globals console, PluginManager, Game_Interpreter, Window_Base, $gameSwitches, Window_MenuCommand, Scene_Map, Scene_Menu, SceneManager, Scene_MenuBase, Window_Selectable, Graphics, Bitmap, ImageManager*/
+/*globals console, PluginManager, Game_Interpreter, Window_Base, $gameSwitches, Window_MenuCommand, Scene_Map, Scene_Menu, SceneManager, Scene_MenuBase, Window_Selectable, Graphics, Bitmap, ImageManager, AudioManager*/
 //=============================================================================
 // Menu.js
 //=============================================================================
@@ -28,7 +28,7 @@
  *
  * @param -- Settings --
  *
- * @param First switch text
+ * @param Initial switch
  * @desc The first switch to be used for achievements.
  * @default 500
  *
@@ -61,6 +61,8 @@
 
 (function () {
 
+    "use strict";
+
     var parameters = PluginManager.parameters('Achievements');
     var achievementsText = String(parameters['Achievements text'] || 'Achievements');
     var achievementUnlockedtext = String(parameters['Achievement unlocked text'] || 'Achievement unlocked!');
@@ -68,7 +70,7 @@
     var achievementUnlockedSe = String(parameters['Achievement unlocked SE'] || 'Item1');
     var lockedImage = String(parameters['Locked image'] || 'locked');
     var imageDirectory = String(parameters['Images directory'] || 'img/achievements');
-    var initialSwitch = Number(parameters['First switch text'] || 500);
+    var initialSwitch = Number(parameters['Initial switch'] || 500);
 
     var startAchievements = function (achievements, lockedBitmap, text, timer) {
 
@@ -198,15 +200,15 @@
 
         Window_AchievementsList.prototype.setDetailsWindow = function (detailsWindow) {
             this._detailsWindow = detailsWindow;
-            this.updateStatus();
+            this.updateDetails();
         };
 
         Window_AchievementsList.prototype.update = function () {
             Window_Selectable.prototype.update.call(this);
-            this.updateStatus();
+            this.updateDetails();
         };
 
-        Window_AchievementsList.prototype.updateStatus = function () {
+        Window_AchievementsList.prototype.updateDetails = function () {
             if (this._detailsWindow) {
                 var item = this._list[this.index()];
                 this._detailsWindow.setItem(item);
