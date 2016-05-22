@@ -79,8 +79,6 @@
  *   }
  * ]
  *
- * Plugin Command:
- *   Achievements unlock 1     # Unlock achievement which id is 1
  */
 
 (function () {
