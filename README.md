@@ -2,14 +2,14 @@
 
 RPG Maker MV Achievements allows you to create achievements in RPG Maker MV.
 
-__Usage__
+# Usage
 
 To unlock an achievement, simply use the following module command in an event : 
 ```
 Achievements unlock <achievement id>
 ```
 
-__Achievements.json__
+# Achievements.json
 
 Place a file named Achievements.json under the data directory.
 
@@ -27,37 +27,37 @@ This file must be structured like that :
 ]
 ```
 
-__Module settings__
+# Module settings
 
-_Achievements text_
+__Achievements text__
 
 The wording displayed in the menu. Default is "Achievements"
 
-_Achievement unlocked text_
+__Achievement unlocked text__
 
 The text displayed when an achievement is unlocked. Default is "Achievement unlocked!"
 
-_Achievement unlocked timer_
+__Achievement unlocked timer__
 
 The time for "Achievement unlocked!" window to be displayed. Default is 180 frames (3 seconds).
 
-_Achievement unlocked SE_
+__Achievement unlocked SE__
 
 The Sound Effect to be played when "Achievement unlocked!" window is displayed. Default is "Item1". Will be played with following parameters : volume: 100, pitch: 100, pan: 0.
 
-_Initial switch_
+__Initial switch__
 
 The switch number from where achievements switch will start. Default is 500. Achievements will be plugged on switch which id is "initial switch" + "achievement id". 
 
-_Images directory_
+__Images directory__
 
 Achievements images directory. Default is img/achievements.
 
-_Locked image_
+__Locked image__
 
 Image displayed on locked achievements. Default is "locked".
 
 
-__Credits__
+# Credits
 
 Feel free to use this script is commercial or non commercial games, but please give credits to Pivert somewhere in your game =)
