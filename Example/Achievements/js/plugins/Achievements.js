@@ -72,10 +72,10 @@
  *     "description": "This is an achievement", // description of the achievement
  *     "lockedDescription": "This is a locked achievement", // description displayed when the achievement is still locked (optional)
  *     "img": "achievement_img", // name of the achievement image file without extension
- * 	"steps":  10, // steps to unlock the achievement (optional). If set, id will use a variable instead of a switch.
- * 	"lockedSteps": "??", // text displayed instead of steps for locked achievements (optional).
- * 	"lockedColor": 0, // color number of the name of the achievement when it is locked (optional). If set, override the "Locked ach. name color" option.
- * 	"unlockedColor": 0 // color number of the name of the achievement when it is unlocked (optional). If set, override the "Unlocked ach. name color" option.
+ *  "steps":  10, // steps to unlock the achievement (optional). If set, id will use a variable instead of a switch.
+ *  "lockedSteps": "??", // text displayed instead of steps for locked achievements (optional).
+ *  "lockedColor": 0, // color number of the name of the achievement when it is locked (optional). If set, override the "Locked ach. name color" option.
+ *  "unlockedColor": 0 // color number of the name of the achievement when it is unlocked (optional). If set, override the "Unlocked ach. name color" option.
  *   }
  * ]
  *
