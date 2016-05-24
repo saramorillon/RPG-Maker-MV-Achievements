@@ -60,6 +60,10 @@
  * @desc Name of the image which should be used for locked achievements.
  * @default locked
  *
+ * @param Locked image
+ * @desc Name of the image which should be used for locked achievements.
+ * @default locked
+ *
  * @help
  *
  * To create an achievements list, create a file named "Achievements.json" in data directory
@@ -102,7 +106,7 @@
     params.lockedAchColor = Number(parameters['Locked ach. name color'] || 0);
     params.unlockedAchColor = Number(parameters['Unlocked ach. name color'] || 0);
 
-    var startAchievements = function (achievements, lockedBitmap, params) {
+    var startAchievements = function (achievements, lockedBitmap, params, skinBitmap) {
 
         var _Window_AchievementUnlocked = null;
 
@@ -126,6 +130,8 @@
             Window_Base.prototype.initialize.call(this, params.achUnlockedX, params.achUnlockedX, params.achUnlockedW, h);
             this.visible = false;
             this.hide();
+            
+            this.windowskin = skinBitmap;
         };
 
         Window_AchievementUnlocked.prototype.update = function () {
@@ -217,6 +223,7 @@
             this.setTopRow(Window_AchievementsList.lastTopRow);
             this.select(Window_AchievementsList.lastIndex);
             this.activate();
+            console.log(skinBitmap);
         };
 
         Window_AchievementsList.prototype.lineHeight = function () {
@@ -460,8 +467,9 @@
                     }
 
                     var locked = ImageManager.loadBitmap(imageDirectory + '/', lockedImage);
+                    var skin = ImageManager.loadBitmap(imageDirectory + '/', 'skin');
 
-                    startAchievements(achievements, locked, params);
+                    startAchievements(achievements, locked, params, skin);
                 } catch (e) {
                     console.error('Could not load script');
                     console.error(e);
