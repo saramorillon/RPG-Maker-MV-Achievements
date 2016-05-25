@@ -62,7 +62,7 @@
  *
  * @param Ach. unlocked skin
  * @desc Skin of the image which should be used for "Achievement unlocked!" window.
- * @default skin
+ * @default default
  *
  * @help
  *
@@ -106,7 +106,7 @@
 
     params.imageDirectory = String(parameters['Images directory'] || 'img/achievements') + '/';
     params.lockedImage = String(parameters['Locked image'] || 'locked');
-    params.skinImage = String(parameters['Ach. unlocked skin'] || 'skin');
+    params.skinImage = String(parameters['Ach. unlocked skin'] || 'default');
 
 
     var startAchievements = function (achievements) {

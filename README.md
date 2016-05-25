@@ -118,6 +118,10 @@ __Locked image__
 
 Image displayed on locked achievements. Default is "locked".
 
+__Ach. unlocked skin__
+
+Skin to be used for "Achievement unlocked!" window. Default is "default" and uses the default skin.
+
 
 # Credits
 
