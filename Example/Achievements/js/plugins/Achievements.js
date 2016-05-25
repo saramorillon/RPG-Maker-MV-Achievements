@@ -2,7 +2,7 @@
 /*globals console*/
 /*globals Window_Base, Window_MenuCommand, Window_Selectable*/
 /*globals Scene_Map, Scene_Menu, SceneManager, Scene_MenuBase*/
-/*globals PluginManager, Graphics, Bitmap, ImageManager, AudioManager, Game_Switches, Game_Variables*/
+/*globals PluginManager, Graphics, Sprite, Bitmap, ImageManager, AudioManager, Game_Switches, Game_Variables*/
 /*globals $gameSwitches, $dataSystem, $gameMap, $gameVariables */
 //=============================================================================
 // Menu.js
@@ -60,9 +60,13 @@
  * @desc Name of the image which should be used for locked achievements.
  * @default locked
  *
- * @param Locked image
- * @desc Name of the image which should be used for locked achievements.
- * @default locked
+ * @param Ach. unlocked skin
+ * @desc Skin of the image which should be used for "Achievement unlocked!" window.
+ * @default skin
+ *
+ * @param Ach. unlocked background
+ * @desc Background of "Achievement unlocked!" window.
+ * @default background
  *
  * @help
  *
@@ -91,8 +95,6 @@
 
     var parameters = PluginManager.parameters('Achievements');
 
-    var lockedImage = String(parameters['Locked image'] || 'locked');
-    var imageDirectory = String(parameters['Images directory'] || 'img/achievements');
 
     var params = {};
 
@@ -106,13 +108,23 @@
     params.lockedAchColor = Number(parameters['Locked ach. name color'] || 0);
     params.unlockedAchColor = Number(parameters['Unlocked ach. name color'] || 0);
 
-    var startAchievements = function (achievements, lockedBitmap, params, skinBitmap) {
+    params.imageDirectory = String(parameters['Images directory'] || 'img/achievements') + '/';
+    params.lockedImage = String(parameters['Locked image'] || 'locked');
+    params.skinImage = String(parameters['Ach. unlocked skin'] || 'skin');
+    params.backgroundImage = String(parameters['Ach. unlocked background'] || 'background');
+
+
+    var startAchievements = function (achievements) {
 
         var _Window_AchievementUnlocked = null;
 
-        /*
-         * Achievement unlocked window
-         */
+        function isUnlocked(item) {
+            return (item.steps && item.steps == $gameVariables.value(item.id)) || $gameSwitches.value(item.id);
+        }
+
+        //=============================================================================
+        // Achievement unlocked window
+        //=============================================================================
         function Window_AchievementUnlocked() {
             this.initialize.apply(this, arguments);
         }
@@ -130,8 +142,8 @@
             Window_Base.prototype.initialize.call(this, params.achUnlockedX, params.achUnlockedX, params.achUnlockedW, h);
             this.visible = false;
             this.hide();
-            
-            this.windowskin = skinBitmap;
+
+            this.windowskin = ImageManager.loadBitmap(params.imageDirectory, params.skinImage);
         };
 
         Window_AchievementUnlocked.prototype.update = function () {
@@ -202,9 +214,9 @@
             });
         };
 
-        /*
-         * Achievements Window
-         */
+        //=============================================================================
+        // Achievements list window
+        //=============================================================================
         function Window_AchievementsList() {
             this.initialize.apply(this, arguments);
         }
@@ -219,11 +231,35 @@
             var width = Graphics.boxWidth;
             var height = Graphics.boxHeight - y;
             Window_Selectable.prototype.initialize.call(this, x, y, width, height);
-            this.refresh();
+
             this.setTopRow(Window_AchievementsList.lastTopRow);
             this.select(Window_AchievementsList.lastIndex);
             this.activate();
-            console.log(skinBitmap);
+
+            this._list = [];
+            var id;
+            for (id in achievements) {
+                if (achievements.hasOwnProperty(id)) {
+                    var sprite = new Sprite();
+                    sprite.bitmap = ImageManager.loadBitmap(params.imageDirectory, achievements[id].img);
+                    sprite.visible = false;
+                    achievements[id].sprite = sprite;
+                    this.addChild(sprite);
+
+                    var locked = new Sprite();
+                    locked.bitmap = ImageManager.loadBitmap(params.imageDirectory, params.lockedImage);
+                    locked.visible = true;
+                    achievements[id].locked = locked;
+                    this.addChild(locked);
+
+                    this._list.push(achievements[id]);
+                }
+            }
+
+            this._list.sort(function (a1, a2) {
+                return a1.id > a2.id ? 1 : -1;
+            });
+            this.refresh();
         };
 
         Window_AchievementsList.prototype.lineHeight = function () {
@@ -260,18 +296,6 @@
         };
 
         Window_AchievementsList.prototype.refresh = function () {
-            var id;
-            this._list = [];
-            for (id in achievements) {
-                if (achievements.hasOwnProperty(id)) {
-                    this._list.push(achievements[id]);
-                }
-            }
-
-            this._list.sort(function (a1, a2) {
-                return a1.id > a2.id ? 1 : -1;
-            });
-
             this.createContents();
             this.drawAllItems();
         };
@@ -279,14 +303,15 @@
         Window_AchievementsList.prototype.drawItem = function (index) {
             var item = this._list[index];
             var rect = this.itemRect(index);
-            this.drawAchievement(item, rect.x + 8, rect.y + 8);
-        };
+            var x = rect.x + 8 + this.padding;
+            var y = rect.y + 8 + this.padding;
 
-        Window_AchievementsList.prototype.drawAchievement = function (item, x, y) {
-            if ($gameSwitches.value(item.id)) {
-                this.contents.blt(item.bitmap, 0, 0, item.bitmap.width, item.bitmap.height, x, y);
-            } else {
-                this.contents.blt(lockedBitmap, 0, 0, item.bitmap.width, item.bitmap.height, x, y);
+            item.sprite.x = item.locked.x = x;
+            item.sprite.y = item.locked.y = y;
+
+            if (isUnlocked(item)) {
+                item.locked.visible = false;
+                item.sprite.visible = true;
             }
         };
 
@@ -296,6 +321,9 @@
             Window_AchievementsList.lastIndex = this.index();
         };
 
+        //=============================================================================
+        // Achievements details window
+        //=============================================================================
         function Window_AchievementsDetails() {
             this.initialize.apply(this, arguments);
         }
@@ -307,6 +335,9 @@
             var width = Graphics.boxWidth;
             var height = 150;
             Window_Base.prototype.initialize.call(this, x, y, width, height);
+
+            this._sprite = new Sprite();
+            this.addChild(this._sprite);
         };
 
         Window_AchievementsDetails.prototype.setItem = function (item) {
@@ -318,45 +349,50 @@
 
         Window_AchievementsDetails.prototype.refresh = function () {
             var item = this._item;
-            var x = 0;
-            var y = 0;
-            var lineHeight = this.lineHeight();
-
-            this.contents.clear();
 
             if (!item) {
                 return;
             }
 
-            if ((item.steps && item.steps == $gameVariables.value(item.id)) || $gameSwitches.value(item.id)) {
-                this.contents.blt(item.bitmap, 0, 0, item.bitmap.width, item.bitmap.height, 10, 10);
-                if (item.unlockedColor) {
-                    this.changeTextColor(this.textColor(item.unlockedColor));
-                } else {
-                    this.changeTextColor(this.textColor(params.unlockedAchColor));
-                }
-                this.drawText(item.name, 10 + 120 + 10, 0);
+            var y = this.lineHeight() + this.textPadding();
+
+            this.contents.clear();
+
+            var color = item.lockedColor ? this.textColor(item.lockedColor) : this.textColor(params.lockedAchColor);
+
+            if (isUnlocked(item)) {
+
+                this._sprite.bitmap = item.sprite.bitmap;
+
+                this._sprite.x = 23;
+                this._sprite.y = 23;
+
+                this.changeTextColor(color);
+                this.drawText(item.name, 140, 0);
                 this.resetTextColor();
-                this.drawText(item.description, 10 + 120 + 10, lineHeight + this.textPadding());
+                this.drawText(item.description, 140, y);
+
             } else {
-                this.contents.blt(lockedBitmap, 0, 0, item.bitmap.width, item.bitmap.height, 10, 10);
-                if (item.lockedColor) {
-                    this.changeTextColor(this.textColor(item.lockedColor));
-                } else {
-                    this.changeTextColor(this.textColor(params.lockedAchColor));
-                }
-                this.drawText(item.name, 10 + 120 + 10, 0);
+
+                this._sprite.bitmap = item.locked.bitmap;
+
+                this._sprite.x = 23;
+                this._sprite.y = 23;
+
+                this.changeTextColor(color);
+                this.drawText(item.name, 140, 0);
                 this.resetTextColor();
-                this.drawText(item.lockedDescription, 10 + 120 + 10, lineHeight + this.textPadding());
+                this.drawText(item.lockedDescription, 140, y);
+
                 if (item.steps) {
-                    this.drawText($gameVariables.value(item.id) + '/' + (item.lockedSteps || item.steps), 10 + 120 + 10, lineHeight + this.textPadding() + lineHeight + this.textPadding());
+                    this.drawText($gameVariables.value(item.id) + '/' + (item.lockedSteps || item.steps), 140, 2 * y);
                 }
             }
         };
 
-        /*
-         * Achievements Scene
-         */
+        //=============================================================================
+        // Achievements scene
+        //=============================================================================
         function Scene_Achievements() {
             this.initialize.apply(this, arguments);
         }
@@ -372,32 +408,34 @@
             Scene_MenuBase.prototype.create.call(this);
 
             this._detailsWindow = new Window_AchievementsDetails(0, 0);
-
             var y = this._detailsWindow.height;
             this._listWindow = new Window_AchievementsList(0, y);
             this._listWindow.setHandler('cancel', this.popScene.bind(this));
-
+            this._listWindow.setDetailsWindow(this._detailsWindow);
             this.addWindow(this._listWindow);
             this.addWindow(this._detailsWindow);
-
-            this._listWindow.setDetailsWindow(this._detailsWindow);
         };
 
+        //=============================================================================
+        // Scene_Map
+        //=============================================================================
         var achievements_map_createDisplayObjects = Scene_Map.prototype.createDisplayObjects;
         Scene_Map.prototype.createDisplayObjects = function () {
             achievements_map_createDisplayObjects.call(this);
-            this.createWindowPop();
-        };
-
-        Scene_Map.prototype.createWindowPop = function () {
             _Window_AchievementUnlocked = new Window_AchievementUnlocked();
             this.addChild(_Window_AchievementUnlocked);
         };
 
+        //=============================================================================
+        // Window_MenuCommand
+        //=============================================================================
         Window_MenuCommand.prototype.addOriginalCommands = function () {
             this.addCommand(params.achText, 'achievements', true);
         };
 
+        //=============================================================================
+        // Scene_Menu
+        //=============================================================================
         var achievements_menu_createCommandWindow = Scene_Menu.prototype.createCommandWindow;
         Scene_Menu.prototype.createCommandWindow = function () {
             achievements_menu_createCommandWindow.call(this);
@@ -409,6 +447,9 @@
             SceneManager.push(Scene_Achievements);
         };
 
+        //=============================================================================
+        // Game_Switches
+        //=============================================================================
         Game_Switches.prototype.setValue = function (switchId, value) {
             if (switchId > 0 && switchId < $dataSystem.switches.length) {
                 this._data[switchId] = value;
@@ -425,6 +466,9 @@
             }
         };
 
+        //=============================================================================
+        // Game_Variables
+        //=============================================================================
         Game_Variables.prototype.setValue = function (variableId, value) {
             if (variableId > 0 && variableId < $dataSystem.variables.length) {
                 if (typeof value === 'number') {
@@ -456,20 +500,13 @@
                 try {
                     var achievements = {};
                     var achievementsArray = JSON.parse(xhr.responseText);
-
                     var i;
                     for (i = 0; i < achievementsArray.length; i++) {
                         var achievement = achievementsArray[i];
-                        var bitmap = ImageManager.loadBitmap(imageDirectory + '/', achievement.img);
+                        achievement.lockedDescription = achievement.lockedDescription || achievement.description;
                         achievements[achievement.id] = achievement;
-                        achievements[achievement.id].bitmap = bitmap;
-                        achievements[achievement.id].lockedDescription = achievements[achievement.id].lockedDescription || achievements[achievement.id].description;
                     }
-
-                    var locked = ImageManager.loadBitmap(imageDirectory + '/', lockedImage);
-                    var skin = ImageManager.loadBitmap(imageDirectory + '/', 'skin');
-
-                    startAchievements(achievements, locked, params, skin);
+                    startAchievements(achievements, params);
                 } catch (e) {
                     console.error('Could not load script');
                     console.error(e);
