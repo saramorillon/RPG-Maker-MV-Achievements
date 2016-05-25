@@ -64,10 +64,6 @@
  * @desc Skin of the image which should be used for "Achievement unlocked!" window.
  * @default skin
  *
- * @param Ach. unlocked background
- * @desc Background of "Achievement unlocked!" window.
- * @default background
- *
  * @help
  *
  * To create an achievements list, create a file named "Achievements.json" in data directory
@@ -111,7 +107,6 @@
     params.imageDirectory = String(parameters['Images directory'] || 'img/achievements') + '/';
     params.lockedImage = String(parameters['Locked image'] || 'locked');
     params.skinImage = String(parameters['Ach. unlocked skin'] || 'skin');
-    params.backgroundImage = String(parameters['Ach. unlocked background'] || 'background');
 
 
     var startAchievements = function (achievements) {
@@ -143,15 +138,19 @@
             this.visible = false;
             this.hide();
 
-            this.windowskin = ImageManager.loadBitmap(params.imageDirectory, params.skinImage);
+            if (params.skinImage != 'default') {
+                this.windowskin = ImageManager.loadBitmap(params.imageDirectory, params.skinImage);
+            }
         };
 
         Window_AchievementUnlocked.prototype.update = function () {
 
             this.contents.clear();
+
             if (this.achievement) {
-                this.drawText(params.achUnlockedText, 0, 0);
-                this.drawText(this.achievement.name, 0, this.lineHeight() + this.textPadding());
+                this.contents.blt(this.achievement.image, 0, 0, this.achievement.image.width, this.achievement.image.height, 0, 0, 72, 72);
+                this.drawText(params.achUnlockedText, 82, 0);
+                this.drawText(this.achievement.name, 82, this.lineHeight() + this.textPadding());
             }
 
             if (this.isHiding) {
@@ -240,18 +239,6 @@
             var id;
             for (id in achievements) {
                 if (achievements.hasOwnProperty(id)) {
-                    var sprite = new Sprite();
-                    sprite.bitmap = ImageManager.loadBitmap(params.imageDirectory, achievements[id].img);
-                    sprite.visible = false;
-                    achievements[id].sprite = sprite;
-                    this.addChild(sprite);
-
-                    var locked = new Sprite();
-                    locked.bitmap = ImageManager.loadBitmap(params.imageDirectory, params.lockedImage);
-                    locked.visible = true;
-                    achievements[id].locked = locked;
-                    this.addChild(locked);
-
                     this._list.push(achievements[id]);
                 }
             }
@@ -303,15 +290,14 @@
         Window_AchievementsList.prototype.drawItem = function (index) {
             var item = this._list[index];
             var rect = this.itemRect(index);
-            var x = rect.x + 8 + this.padding;
-            var y = rect.y + 8 + this.padding;
 
-            item.sprite.x = item.locked.x = x;
-            item.sprite.y = item.locked.y = y;
+            var x = rect.x + 8;
+            var y = rect.y + 8;
 
             if (isUnlocked(item)) {
-                item.locked.visible = false;
-                item.sprite.visible = true;
+                this.contents.blt(item.image, 0, 0, item.image.width, item.image.height, x, y);
+            } else {
+                this.contents.blt(item.locked, 0, 0, item.locked.width, item.locked.height, x, y);
             }
         };
 
@@ -335,9 +321,6 @@
             var width = Graphics.boxWidth;
             var height = 150;
             Window_Base.prototype.initialize.call(this, x, y, width, height);
-
-            this._sprite = new Sprite();
-            this.addChild(this._sprite);
         };
 
         Window_AchievementsDetails.prototype.setItem = function (item) {
@@ -362,10 +345,7 @@
 
             if (isUnlocked(item)) {
 
-                this._sprite.bitmap = item.sprite.bitmap;
-
-                this._sprite.x = 23;
-                this._sprite.y = 23;
+                this.contents.blt(item.image, 0, 0, item.image.width, item.image.height, 0, 5);
 
                 this.changeTextColor(color);
                 this.drawText(item.name, 140, 0);
@@ -374,10 +354,7 @@
 
             } else {
 
-                this._sprite.bitmap = item.locked.bitmap;
-
-                this._sprite.x = 23;
-                this._sprite.y = 23;
+                this.contents.blt(item.locked, 0, 0, item.locked.width, item.locked.height, 0, 5);
 
                 this.changeTextColor(color);
                 this.drawText(item.name, 140, 0);
@@ -451,7 +428,7 @@
         // Game_Switches
         //=============================================================================
         Game_Switches.prototype.setValue = function (switchId, value) {
-            if (switchId > 0 && switchId < $dataSystem.switches.length) {
+            if (switchId > 0 && switchId < $dataSystem.switches.length && $gameSwitches.value(switchId) != value) {
                 this._data[switchId] = value;
                 this.onChange(switchId);
             }
@@ -470,7 +447,7 @@
         // Game_Variables
         //=============================================================================
         Game_Variables.prototype.setValue = function (variableId, value) {
-            if (variableId > 0 && variableId < $dataSystem.variables.length) {
+            if (variableId > 0 && variableId < $dataSystem.variables.length && $gameVariables.value(variableId) != value) {
                 if (typeof value === 'number') {
                     value = Math.floor(value);
                 }
@@ -504,9 +481,11 @@
                     for (i = 0; i < achievementsArray.length; i++) {
                         var achievement = achievementsArray[i];
                         achievement.lockedDescription = achievement.lockedDescription || achievement.description;
+                        achievement.image = ImageManager.loadBitmap(params.imageDirectory, achievement.img);
+                        achievement.locked = ImageManager.loadBitmap(params.imageDirectory, params.lockedImage);
                         achievements[achievement.id] = achievement;
                     }
-                    startAchievements(achievements, params);
+                    startAchievements(achievements);
                 } catch (e) {
                     console.error('Could not load script');
                     console.error(e);
