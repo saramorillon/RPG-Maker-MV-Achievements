@@ -231,10 +231,6 @@
             var height = Graphics.boxHeight - y;
             Window_Selectable.prototype.initialize.call(this, x, y, width, height);
 
-            this.setTopRow(Window_AchievementsList.lastTopRow);
-            this.select(Window_AchievementsList.lastIndex);
-            this.activate();
-
             this._list = [];
             var id;
             for (id in achievements) {
@@ -246,6 +242,10 @@
             this._list.sort(function (a1, a2) {
                 return a1.id > a2.id ? 1 : -1;
             });
+
+            this.setTopRow(Window_AchievementsList.lastTopRow);
+            this.select(Window_AchievementsList.lastIndex);
+            this.activate();
             this.refresh();
         };
 
@@ -280,11 +280,6 @@
                 var item = this._list[this.index()];
                 this._detailsWindow.setItem(item);
             }
-        };
-
-        Window_AchievementsList.prototype.refresh = function () {
-            this.createContents();
-            this.drawAllItems();
         };
 
         Window_AchievementsList.prototype.drawItem = function (index) {
