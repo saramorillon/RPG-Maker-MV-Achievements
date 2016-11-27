@@ -2,6 +2,7 @@
     {
         "id": 1,
         "name": "Green Fingers",
+        "lockedName": "Green Fingers locked",
         "description": "Talk to someone and to a plant",
         "img": "green_fingers",
         "steps": 2,

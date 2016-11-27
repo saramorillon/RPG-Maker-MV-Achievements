@@ -21,6 +21,7 @@ This file must be structured like that :
   {
     "id": 1,
     "name": "Achievement",
+    "lockedName": "Locked achievement",
     "description": "This is an achievement",
     "lockedDescription": "This is a locked achievement",
     "img": "achievement_img",
@@ -43,6 +44,10 @@ Id of the switch which will store the achievement.
 __name__
 
 Name of the achievement.
+
+__lockedName__
+
+Name displayed when the achievement is still locked (optional).
 
 __description__
 

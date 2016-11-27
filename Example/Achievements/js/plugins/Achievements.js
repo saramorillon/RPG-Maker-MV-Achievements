@@ -73,13 +73,14 @@
  *   {
  *     "id": 1, // id of the switch which will store the achievement
  *     "name": "Achievement", // name of the achievement
+ *     "lockedName": "Locked achievement", // name displayed when the achievement is still locked (optional)
  *     "description": "This is an achievement", // description of the achievement
  *     "lockedDescription": "This is a locked achievement", // description displayed when the achievement is still locked (optional)
  *     "img": "achievement_img", // name of the achievement image file without extension
- *  "steps":  10, // steps to unlock the achievement (optional). If set, id will use a variable instead of a switch.
- *  "lockedSteps": "??", // text displayed instead of steps for locked achievements (optional).
- *  "lockedColor": 0, // color number of the name of the achievement when it is locked (optional). If set, override the "Locked ach. name color" option.
- *  "unlockedColor": 0 // color number of the name of the achievement when it is unlocked (optional). If set, override the "Unlocked ach. name color" option.
+ *     "steps":  10, // steps to unlock the achievement (optional). If set, id will use a variable instead of a switch.
+ *     "lockedSteps": "??", // text displayed instead of steps for locked achievements (optional).
+ *     "lockedColor": 0, // color number of the name of the achievement when it is locked (optional). If set, override the "Locked ach. name color" option.
+ *     "unlockedColor": 0 // color number of the name of the achievement when it is unlocked (optional). If set, override the "Unlocked ach. name color" option.
  *   }
  * ]
  *
@@ -352,9 +353,9 @@
                 this.contents.blt(item.locked, 0, 0, item.locked.width, item.locked.height, 0, 5);
 
                 this.changeTextColor(color);
-                this.drawText(item.name, 140, 0);
+                this.drawText(item.lockedName || item.name, 140, 0);
                 this.resetTextColor();
-                this.drawText(item.lockedDescription, 140, y);
+                this.drawText(item.lockedDescription || item.description, 140, y);
 
                 if (item.steps) {
                     this.drawText($gameVariables.value(item.id) + '/' + (item.lockedSteps || item.steps), 140, 2 * y);
@@ -475,7 +476,6 @@
                     var i;
                     for (i = 0; i < achievementsArray.length; i++) {
                         var achievement = achievementsArray[i];
-                        achievement.lockedDescription = achievement.lockedDescription || achievement.description;
                         achievement.image = ImageManager.loadBitmap(params.imageDirectory, achievement.img);
                         achievement.locked = ImageManager.loadBitmap(params.imageDirectory, params.lockedImage);
                         achievements[achievement.id] = achievement;
