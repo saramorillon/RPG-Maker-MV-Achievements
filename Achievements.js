@@ -135,7 +135,7 @@
 
             var h = this.fittingHeight(2);
 
-            Window_Base.prototype.initialize.call(this, params.achUnlockedX, params.achUnlockedX, params.achUnlockedW, h);
+            Window_Base.prototype.initialize.call(this, params.achUnlockedX, params.achUnlockedY, params.achUnlockedW, h);
             this.visible = false;
             this.hide();
 
@@ -337,10 +337,11 @@
 
             this.contents.clear();
 
-            var color = item.lockedColor ? this.textColor(item.lockedColor) : this.textColor(params.lockedAchColor);
+            var color;
 
             if (isUnlocked(item)) {
 
+                color = item.unLockedColor ? this.textColor(item.unLockedColor) : this.textColor(params.unlockedAchColor);
                 this.contents.blt(item.image, 0, 0, item.image.width, item.image.height, 0, 5);
 
                 this.changeTextColor(color);
@@ -350,6 +351,7 @@
 
             } else {
 
+                color = item.lockedColor ? this.textColor(item.lockedColor) : this.textColor(params.lockedAchColor);
                 this.contents.blt(item.locked, 0, 0, item.locked.width, item.locked.height, 0, 5);
 
                 this.changeTextColor(color);

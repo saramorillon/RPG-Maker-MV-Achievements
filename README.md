@@ -63,11 +63,11 @@ Name of the achievement image file without extension.
 
 __steps__
 
-Steps to unlock the achievement (optional). If set, id will use a variable instead of a switch.
+Needed steps to unlock the achievement (optional). If set, id will use a variable instead of a switch.
 
 __lockedSteps__
 
-Text displayed instead of steps for locked achievements (optional).
+Text hiding the number of steps needed to unlock the achievement (optional).
 
 __lockedColor__
 
