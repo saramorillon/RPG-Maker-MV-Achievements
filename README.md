@@ -107,6 +107,10 @@ __Ach. unlocked Y position__
 
 The Y position of "Achievement unlocked!" window. Default is 0.
 
+__Ach. unlocked name color__
+
+The color number of the name in "Achievement unlocked!" window. Default is 0.
+
 __Locked ach. name color__
 
 The color of the name of locked achievements in achievements window. Default is 0.

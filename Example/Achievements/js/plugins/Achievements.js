@@ -42,6 +42,10 @@
  * @desc Y position of "Achievement unlocked!" window.
  * @default 0
  *
+ * @param Ach. unlocked name color
+ * @desc The color number of the name in "Achievement unlocked!" window.
+ * @default 0
+ *
  * @param Locked ach. name color
  * @desc Color of the name of locked achievements in achievements window.
  * @default 0
@@ -102,6 +106,7 @@
     params.achUnlockedW = Number(parameters['Ach. unlocked width'] || 480);
     params.achUnlockedX = Number(parameters['Ach. unlocked X position'] || 0);
     params.achUnlockedY = Number(parameters['Ach. unlocked Y position'] || 0);
+    params.achUnlockedColor = Number(parameters['Ach. unlocked name color'] || 0);
     params.lockedAchColor = Number(parameters['Locked ach. name color'] || 0);
     params.unlockedAchColor = Number(parameters['Unlocked ach. name color'] || 0);
 
@@ -150,7 +155,9 @@
 
             if (this.achievement) {
                 this.contents.blt(this.achievement.image, 0, 0, this.achievement.image.width, this.achievement.image.height, 0, 0, 72, 72);
+                this.changeTextColor(this.textColor(params.achUnlockedColor));
                 this.drawText(params.achUnlockedText, 82, 0);
+                this.resetTextColor();
                 this.drawText(this.achievement.name, 82, this.lineHeight());
             }
 
