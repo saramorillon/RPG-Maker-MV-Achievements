@@ -151,7 +151,7 @@
             if (this.achievement) {
                 this.contents.blt(this.achievement.image, 0, 0, this.achievement.image.width, this.achievement.image.height, 0, 0, 72, 72);
                 this.drawText(params.achUnlockedText, 82, 0);
-                this.drawText(this.achievement.name, 82, this.lineHeight() + this.textPadding());
+                this.drawText(this.achievement.name, 82, this.lineHeight());
             }
 
             if (this.isHiding) {
