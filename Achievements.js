@@ -421,10 +421,10 @@
     var Scene_Menu_createCommandWindow = Scene_Menu.prototype.createCommandWindow;
     Scene_Menu.prototype.createCommandWindow = function () {
         Scene_Menu_createCommandWindow.call(this);
-        this._commandWindow.setHandler('achievements', this.commandLoad.bind(this));
+        this._commandWindow.setHandler('achievements', this.commandAchievement.bind(this));
     };
 
-    Scene_Menu.prototype.commandLoad = function () {
+    Scene_Menu.prototype.commandAchievement = function () {
         SceneManager.push(Scene_Achievements);
     };
 
